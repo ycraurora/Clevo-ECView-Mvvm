@@ -1,0 +1,106 @@
+﻿<Window x:Class="ECView.Views.ECMainView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:cm="http://www.caliburnproject.org"
+        Title="{Binding Title}" Height="350" Width="500" ResizeMode="CanMinimize" cm:Message.Attach="[Event Closing] = [Action WindowClosing]">
+    <Window.Resources>
+        <ResourceDictionary>
+            <Style x:Key="MetroBigTextBlock" TargetType="{x:Type TextBlock}">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="FontSize" Value="20"/>
+            </Style>
+            <Style x:Key="MetroMidTextBlock" TargetType="{x:Type TextBlock}">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Left"/>
+                <Setter Property="FontSize" Value="16"/>
+                <Setter Property="Margin" Value="50,0,0,0"/>
+            </Style>
+            <Style x:Key="MetroLabel" TargetType="{x:Type Label}">
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="FontSize" Value="16"/>
+            </Style>
+            <Style x:Key="MetroDataGrid" TargetType="{x:Type DataGrid}">
+                <Setter Property="IsReadOnly" Value="True"/>
+                <Setter Property="AutoGenerateColumns" Value="False"/>
+                <Setter Property="CanUserReorderColumns" Value="False"/>
+                <Setter Property="CanUserSortColumns" Value="False"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalGridLinesBrush" Value="LightBlue"/>
+                <Setter Property="HorizontalGridLinesBrush" Value="LightBlue"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
+                <Setter Property="RowHeaderWidth" Value="0"/>
+                <Setter Property="Background" Value="White"/>
+            </Style>
+            <Style x:Key="MetroDataGridText" TargetType="{x:Type TextBlock}">
+                <Setter Property="TextAlignment" Value="Center"/>
+            </Style>
+            <Style x:Key="MetroDataGridHeader" TargetType="{x:Type DataGridColumnHeader}">
+                <Setter Property="Background" Value="White"/>
+                <Setter Property="BorderBrush" Value="LightBlue"/>
+                <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid x:Name="ECViewGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="1"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <Menu Background="White" VerticalAlignment="Center" BorderThickness="0">
+            <MenuItem Name="AboutClick" Header="关于" FontSize="14"/>
+        </Menu>
+        <TextBlock Grid.Row="1" Text="Clevo ECView（风扇转速控制软件）" Style="{StaticResource MetroBigTextBlock}"/>
+        <Rectangle Grid.Row="2" Fill="#aaa" VerticalAlignment="Top" Height="1" Margin="20,0,20,0"/>
+        <Grid Grid.Row="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="35"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Name="NbModel" Style="{StaticResource MetroMidTextBlock}"/>
+            <TextBlock Grid.Row="1" Name="ECVersion" Style="{StaticResource MetroMidTextBlock}"/>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.1*"/>
+                    <ColumnDefinition Width="0.5*"/>
+                    <ColumnDefinition Width="0.5*"/>
+                    <ColumnDefinition Width="0.5*"/>
+                    <ColumnDefinition Width="0.5*"/>
+                    <ColumnDefinition Width="0.1*"/>
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="1" Content="CPU温度：" Style="{StaticResource MetroLabel}" HorizontalAlignment="Right"/>
+                <Label Grid.Column="2" Name="CpuRemote" Style="{StaticResource MetroLabel}"/>
+                <Label Grid.Column="3" Content="显卡温度：" Style="{StaticResource MetroLabel}" HorizontalAlignment="Right"/>
+                <Label Grid.Column="4" Name="CpuLocal" Style="{StaticResource MetroLabel}"/>
+            </Grid>
+            <DataGrid x:Name="ECViewCollec" Grid.Row="3" Grid.RowSpan="3" Style="{StaticResource MetroDataGrid}" cm:Message.Attach="[Event MouseDoubleClick] = [Action DgDoubleClick($source,$eventArgs)]">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Width="0.5*" Binding="{Binding FanNo}" ElementStyle="{StaticResource MetroDataGridText}">
+                        <DataGridTextColumn.Header>
+                            <DataGridColumnHeader Content="风扇序号" Style="{StaticResource MetroDataGridHeader}"/>
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Width="1*" Binding="{Binding FanDutyStr}" ElementStyle="{StaticResource MetroDataGridText}">
+                        <DataGridTextColumn.Header>
+                            <DataGridColumnHeader Content="风扇转速" Style="{StaticResource MetroDataGridHeader}"/>
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Width="1*" Binding="{Binding FanSet}" ElementStyle="{StaticResource MetroDataGridText}">
+                        <DataGridTextColumn.Header>
+                            <DataGridColumnHeader Content="风扇当前配置" Style="{StaticResource MetroDataGridHeader}"/>
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+    </Grid>
+</Window>
