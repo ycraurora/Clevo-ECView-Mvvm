@@ -1,15 +1,15 @@
 ﻿using System.Diagnostics;
 using System.Threading;
-using System.Windows;
 
 namespace ECView
 {
     /// <summary>
     /// App.xaml 的交互逻辑
     /// </summary>
-    public partial class App : Application
+    public partial class App
     {
-        Mutex mut;
+        // ReSharper disable once NotAccessedField.Local
+        private Mutex _mut;
         public App()
         {
             //禁用重复开启
@@ -30,17 +30,15 @@ namespace ECView
                     Environment.Exit(1);
                 }
             }*/
-            bool requestInitialOwnership = true;
+            const bool requestInitialOwnership = true;
             bool mutexWasCreated;
-            mut = new Mutex(requestInitialOwnership, "com.ECView.Ding", out mutexWasCreated);
-            if (!(requestInitialOwnership && mutexWasCreated))
-            {
-                // 随意什么操作啦~
-                //Current.Shutdown();
-                //当前运行WPF程序的进程实例
-                Process process = Process.GetCurrentProcess();
-                process.Kill();
-            }
+            _mut = new Mutex(requestInitialOwnership, "com.ECView.Ding", out mutexWasCreated);
+            if (mutexWasCreated) return;
+            // 随意什么操作啦~
+            //Current.Shutdown();
+            //当前运行WPF程序的进程实例
+            var process = Process.GetCurrentProcess();
+            process.Kill();
         }
     }
 }

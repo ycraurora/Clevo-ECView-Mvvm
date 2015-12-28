@@ -1,4 +1,5 @@
 ﻿using ECView.Services.ServicesImpl;
+using JetBrains.Annotations;
 
 namespace ECView.Services
 {
@@ -7,14 +8,10 @@ namespace ECView.Services
         /// <summary>
         /// 风扇调节功能接口实例化
         /// </summary>
-        private static IFanDutyModify moduleFanDutyModify = null;
+        [CanBeNull] private static IFanDutyModify _moduleFanDutyModify;
         public static IFanDutyModify GetFanDutyModifyModule()
         {
-            if (moduleFanDutyModify == null)
-            {
-                moduleFanDutyModify = new FanDutyModifyImpl();
-            }
-            return moduleFanDutyModify;
+            return _moduleFanDutyModify ?? (_moduleFanDutyModify = new FanDutyModifyImpl());
         }
     }
 }

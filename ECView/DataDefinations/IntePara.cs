@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace ECView.DataDefinations
 {
@@ -31,6 +32,7 @@ namespace ECView.DataDefinations
         /// <summary>
         /// 范围参数列表
         /// </summary>
+        [CanBeNull]
         public List<RangePara> RangeParaList
         {
             get;

@@ -5,10 +5,11 @@ using Microsoft.Win32;
 using System;
 using System.IO;
 using System.Windows;
+using JetBrains.Annotations;
 
 namespace ECView.ViewModels
 {
-    public class ECEditorViewModel : Screen, IShell
+    public class EcEditorViewModel : Screen, IShell
     {
         #region 绑定数据
         /// <summary>
@@ -95,17 +96,17 @@ namespace ECView.ViewModels
         #endregion
         #region 成员变量
         //功能接口
-        private IFanDutyModify iFanDutyModify = ModuleFactory.GetFanDutyModifyModule();
-        private ECMainViewModel _main;
+        [NotNull] private readonly IFanDutyModify _iFanDutyModify = ModuleFactory.GetFanDutyModifyModule();
+        [NotNull] private readonly EcMainViewModel _main;
         private int _fanSetModel;//风扇控制模式
-        private int _index;//行号
+        private readonly int _index;//行号
         //工作目录
-        private string path = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
+        [NotNull] private readonly string _path = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
         #endregion
         /// <summary>
         /// 无参构造函数
         /// </summary>
-        public ECEditorViewModel(int fanDuty, int index, ECMainViewModel ecMain)
+        public EcEditorViewModel(int fanDuty, int index, EcMainViewModel ecMain)
         {
             _main = ecMain;
             _fanDuty = fanDuty;
@@ -155,35 +156,37 @@ namespace ECView.ViewModels
         /// </summary>
         public void FileSelect()
         {
-            OpenFileDialog fileDialog = new OpenFileDialog();
-            fileDialog.InitialDirectory = Directory.GetCurrentDirectory();//初始目录
-            fileDialog.DefaultExt = ".xml"; // 默认文件类型
-            fileDialog.Filter = "XML Files (.xml)|*.xml";
-            fileDialog.Multiselect = false;
-            //加入选择的文件信息
-            if (fileDialog.ShowDialog() == true)
+            var fileDialog = new OpenFileDialog
             {
-                try
+                InitialDirectory = Directory.GetCurrentDirectory(),
+                DefaultExt = ".xml",
+                Filter = "XML Files (.xml)|*.xml",
+                Multiselect = false
+            };
+            //初始目录
+            // 默认文件类型
+            //加入选择的文件信息
+            if (fileDialog.ShowDialog() != true) return;
+            try
+            {
+                var filePath = fileDialog.FileName;//选择配置文件
+                //风扇号
+                var fanNo = _index + 1;
+                //目标文件绝对路径
+                var targetPath = _path + "conf\\Configuration_" + fanNo + ".xml";
+                //检测目标文件夹是否存在
+                if (!Directory.Exists(_path + "conf\\"))
                 {
-                    string filePath = fileDialog.FileName;//选择配置文件
-                    //风扇号
-                    int fanNo = _index + 1;
-                    //目标文件绝对路径
-                    string targetPath = path + "conf\\Configuration_" + fanNo + ".xml";
-                    //检测目标文件夹是否存在
-                    if (!Directory.Exists(path + "conf\\"))
-                    {
-                        //若不存在则建立文件夹
-                        Directory.CreateDirectory(path + "conf\\");
-                    }
-                    //复制配置文件（覆盖同名文件）
-                    File.Copy(fileDialog.FileName, targetPath, true);
-                    FilePath = filePath;
+                    //若不存在则建立文件夹
+                    Directory.CreateDirectory(_path + "conf\\");
                 }
-                catch (Exception ee)
-                {
-                    MessageBox.Show("文件读取错误！错误原因" + ee.Message, "ERROR", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
+                //复制配置文件（覆盖同名文件）
+                File.Copy(fileDialog.FileName, targetPath, true);
+                FilePath = filePath;
+            }
+            catch (Exception ee)
+            {
+                MessageBox.Show("文件读取错误！错误原因" + ee.Message, "ERROR", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
         /// <summary>
@@ -198,46 +201,47 @@ namespace ECView.ViewModels
         /// </summary>
         public void ConfirmClick()
         {
-            if (_fanSetModel == 1)
+            switch (_fanSetModel)
             {
-                _main.ECViewCollec[_index].FanSet = "自动调节";
-                _main.ECViewCollec[_index].FanSetModel = 1;
-                iFanDutyModify.SetFanduty(_index + 1, 0, true);
-                _main.ECViewCollec[_index].UpdateFlag = true;
-
-                //关闭窗口
-                TryClose();
-            }
-            else if (_fanSetModel == 2)
-            {
-                _main.ECViewCollec[_index].FanSet = "手动调节";
-                _main.ECViewCollec[_index].FanSetModel = 2;
-                _main.ECViewCollec[_index].FanDuty = _fanDuty;
-                _main.ECViewCollec[_index].FanDutyStr = _fanDuty + "%";
-                iFanDutyModify.SetFanduty(_index + 1, (int)(_fanDuty * 2.55m), false);
-                _main.ECViewCollec[_index].UpdateFlag = true;
-
-                //关闭窗口
-                TryClose();
-            }
-            else if (_fanSetModel == 3)
-            {
-                _main.ECViewCollec[_index].FanSet = "智能调节";
-                _main.ECViewCollec[_index].FanSetModel = 3;
-                if (_filePath == null || _filePath == "")
-                {
-                    MessageBox.Show("请选择配置文件", "提示信息", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                else
-                {
-                    _main.ECViewCollec[_index].UpdateFlag = true;
-                    MessageBox.Show("智能调节将在程序关闭后启用", "提示信息", MessageBoxButton.OK, MessageBoxImage.Information);
+                case 1:
+                    _main.EcViewCollec[_index].FanSet = "自动调节";
+                    _main.EcViewCollec[_index].FanSetModel = 1;
+                    _iFanDutyModify.SetFanduty(_index + 1, 0, true);
+                    _main.EcViewCollec[_index].UpdateFlag = true;
 
                     //关闭窗口
                     TryClose();
-                }
+                    break;
+                case 2:
+                    _main.EcViewCollec[_index].FanSet = "手动调节";
+                    _main.EcViewCollec[_index].FanSetModel = 2;
+                    _main.EcViewCollec[_index].FanDuty = _fanDuty;
+                    _main.EcViewCollec[_index].FanDutyStr = _fanDuty + "%";
+                    _iFanDutyModify.SetFanduty(_index + 1, (int)(_fanDuty * 2.55m), false);
+                    _main.EcViewCollec[_index].UpdateFlag = true;
+
+                    //关闭窗口
+                    TryClose();
+                    break;
+                case 3:
+                    _main.EcViewCollec[_index].FanSet = "智能调节";
+                    _main.EcViewCollec[_index].FanSetModel = 3;
+                    if (string.IsNullOrEmpty(_filePath))
+                    {
+                        MessageBox.Show("请选择配置文件", "提示信息", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        _main.EcViewCollec[_index].UpdateFlag = true;
+                        MessageBox.Show("智能调节将在程序关闭后启用", "提示信息", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                        //关闭窗口
+                        TryClose();
+                    }
+                    break;
             }
         }
+
         #endregion
         #region 私有方法
         /// <summary>
@@ -245,7 +249,7 @@ namespace ECView.ViewModels
         /// </summary>
         private void _initData()
         {
-            _fanSetModel = _main.ECViewCollec[_index].FanSetModel;
+            _fanSetModel = _main.EcViewCollec[_index].FanSetModel;
             switch (_fanSetModel)
             {
                 case 1:

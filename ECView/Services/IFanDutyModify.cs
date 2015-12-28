@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ECView.DataDefinations;
+using JetBrains.Annotations;
 
 namespace ECView.Services
 {
@@ -17,7 +18,7 @@ namespace ECView.Services
         /// 获取EC版本号
         /// </summary>
         /// <returns>EC版本</returns>
-        string GetECVersion();
+        string GetEcVersion();
         /// <summary>
         /// 获取风扇转速与温度数据
         /// </summary>
@@ -58,6 +59,7 @@ namespace ECView.Services
         /// </summary>
         /// <param name="filename">配置文件名</param>
         /// <returns>风扇配置</returns>
+        [CanBeNull]
         List<ConfigPara> ReadCfgFile(string filename);
         /// <summary>
         /// 智能调节风扇转速

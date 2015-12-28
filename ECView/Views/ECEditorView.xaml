@@ -1,7 +1,6 @@
-﻿<Window x:Class="ECView.Views.ECEditorView"
+﻿<Window x:Class="ECView.Views.EcEditorView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:local="clr-namespace:ECView.Views"
         xmlns:cm="http://www.caliburnproject.org"
         Title="{Binding Title}" Height="300" Width="500" ResizeMode="CanMinimize">
     <Window.Resources>
@@ -32,7 +31,7 @@
             </Style>
         </ResourceDictionary>
     </Window.Resources>
-    <Grid Name="ECEditGrid">
+    <Grid Name="EcEditGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="35"/>
             <RowDefinition Height="1"/>

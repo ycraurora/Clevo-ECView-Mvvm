@@ -13,7 +13,7 @@
         /// <summary>
         /// EC版本
         /// </summary>
-        public string ECVersion
+        public string EcVersion
         {
             get;
             set;

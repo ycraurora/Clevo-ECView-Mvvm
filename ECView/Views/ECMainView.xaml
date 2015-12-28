@@ -1,4 +1,4 @@
-﻿<Window x:Class="ECView.Views.ECMainView"
+﻿<Window x:Class="ECView.Views.EcMainView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:cm="http://www.caliburnproject.org"
@@ -47,7 +47,7 @@
             </Style>
         </ResourceDictionary>
     </Window.Resources>
-    <Grid x:Name="ECViewGrid">
+    <Grid x:Name="EcViewGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition Height="50"/>
@@ -67,7 +67,7 @@
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Name="NbModel" Style="{StaticResource MetroMidTextBlock}"/>
-            <TextBlock Grid.Row="1" Name="ECVersion" Style="{StaticResource MetroMidTextBlock}"/>
+            <TextBlock Grid.Row="1" Name="EcVersion" Style="{StaticResource MetroMidTextBlock}"/>
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.1*"/>
@@ -82,7 +82,7 @@
                 <Label Grid.Column="3" Content="显卡温度：" Style="{StaticResource MetroLabel}" HorizontalAlignment="Right"/>
                 <Label Grid.Column="4" Name="CpuLocal" Style="{StaticResource MetroLabel}"/>
             </Grid>
-            <DataGrid x:Name="ECViewCollec" Grid.Row="3" Grid.RowSpan="3" Style="{StaticResource MetroDataGrid}" cm:Message.Attach="[Event MouseDoubleClick] = [Action DgDoubleClick($source,$eventArgs)]">
+            <DataGrid x:Name="EcViewCollec" Grid.Row="3" Style="{StaticResource MetroDataGrid}" cm:Message.Attach="[Event MouseDoubleClick] = [Action DgDoubleClick($source,$eventArgs)]">
                 <DataGrid.Columns>
                     <DataGridTextColumn Width="0.5*" Binding="{Binding FanNo}" ElementStyle="{StaticResource MetroDataGridText}">
                         <DataGridTextColumn.Header>

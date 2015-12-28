@@ -3,6 +3,7 @@ using ECView.Tools;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using JetBrains.Annotations;
 
 namespace ECView.Services.ServicesImpl
 {
@@ -15,6 +16,7 @@ namespace ECView.Services.ServicesImpl
         /// <param name="fanduty">风扇转速</param>
         /// <param name="isAuto">自动调节标识</param>
         /// <returns>风扇实际转速</returns>
+        [NotNull]
         public int[] SetFanduty(int fanNo, int fanduty, bool isAuto)
         {
             try
@@ -30,12 +32,12 @@ namespace ECView.Services.ServicesImpl
                     DataTool.SetFanDuty(fanNo, fanduty);
                 }
                 Thread.Sleep(500);
-                int[] newFanduty = this._updateFanDuty(fanNo);
+                var newFanduty = _updateFanDuty(fanNo);
                 return newFanduty;
             }
             catch (Exception e)
             {
-                Console.WriteLine("设置风扇转速错误，原因：" + e.Message);
+                Console.WriteLine(@"设置风扇转速错误，原因：" + e.Message);
                 int[] newFanduty = { -1, -1, -1 };
                 return newFanduty;
             }
@@ -44,16 +46,17 @@ namespace ECView.Services.ServicesImpl
         /// 获取EC版本号
         /// </summary>
         /// <returns>EC版本</returns>
-        public string GetECVersion()
+        [NotNull]
+        public string GetEcVersion()
         {
             try
             {
-                string ECVersion = DataTool.GetECVersion();
-                return ECVersion;
+                var ecVersion = DataTool.GetECVersion();
+                return ecVersion;
             }
             catch (Exception e)
             {
-                Console.WriteLine("获取EC版本错误，原因：" + e.Message);
+                Console.WriteLine(@"获取EC版本错误，原因：" + e.Message);
                 return "";
             }
         }
@@ -61,13 +64,14 @@ namespace ECView.Services.ServicesImpl
         /// 获取风扇转速与温度数据
         /// </summary>
         /// <returns>转速与温度结构体</returns>
+        [NotNull]
         public int[] GetTempFanDuty(int fanNo)
         {
             try
             {
                 var ecData = DataTool.GetTempFanDuty(fanNo);
-                int byteData = ecData.data;
-                byte[] ec = BitConverter.GetBytes(byteData);
+                var byteData = ecData.Data;
+                var ec = BitConverter.GetBytes(byteData);
                 int[] fanduty = { 0, 0, 0 };
                 fanduty[0] = ec[0];
                 fanduty[1] = ec[1];
@@ -76,7 +80,7 @@ namespace ECView.Services.ServicesImpl
             }
             catch (Exception e)
             {
-                Console.WriteLine("获取风扇转速与温度数据错误，原因：" + e.Message);
+                Console.WriteLine(@"获取风扇转速与温度数据错误，原因：" + e.Message);
                 int[] fanduty = { -1, -1, -1 };
                 return fanduty;
             }
@@ -89,12 +93,12 @@ namespace ECView.Services.ServicesImpl
         {
             try
             {
-                int FANCount = DataTool.GetFANCounter();
-                return FANCount;
+                var fanCount = DataTool.GetFANCounter();
+                return fanCount;
             }
             catch (Exception e)
             {
-                Console.WriteLine("获取风扇数量错误，原因：" + e.Message);
+                Console.WriteLine(@"获取风扇数量错误，原因：" + e.Message);
                 return -1;
             }
         }
@@ -107,12 +111,12 @@ namespace ECView.Services.ServicesImpl
         {
             try
             {
-                int serviceState = ServiceTool.CheckServiceState(serviceName);
+                var serviceState = ServiceTool.CheckServiceState(serviceName);
                 return serviceState;
             }
             catch (Exception e)
             {
-                Console.WriteLine("获取服务状态错误，原因：" + e.Message);
+                Console.WriteLine(@"获取服务状态错误，原因：" + e.Message);
                 return -1;
             }
         }
@@ -123,7 +127,7 @@ namespace ECView.Services.ServicesImpl
         /// <returns>启动状态</returns>
         public bool StartService(string serviceName)
         {
-            bool flag = ServiceTool.StartService(serviceName);
+            var flag = ServiceTool.StartService(serviceName);
             return flag;
         }
         /// <summary>
@@ -133,7 +137,7 @@ namespace ECView.Services.ServicesImpl
         /// <returns></returns>
         public bool StopService(string serviceName)
         {
-            bool flag = ServiceTool.StopService(serviceName);
+            var flag = ServiceTool.StopService(serviceName);
             return flag;
         }
         /// <summary>
@@ -150,6 +154,7 @@ namespace ECView.Services.ServicesImpl
         /// </summary>
         /// <param name="filename">配置文件名</param>
         /// <returns>风扇配置</returns>
+        [NotNull]
         public List<ConfigPara> ReadCfgFile(string filename)
         {
             return FileTool.ReadCfgFile(filename);
@@ -162,7 +167,7 @@ namespace ECView.Services.ServicesImpl
         /// <returns></returns>
         public bool InteFandutyControl(string filePath, int fanNo)
         {
-            bool state = _inteFandutyControl(filePath, fanNo);
+            var state = _inteFandutyControl(filePath, fanNo);
             return state;
         }
 
@@ -177,7 +182,7 @@ namespace ECView.Services.ServicesImpl
         {
             try
             {
-                IntePara intePara = FileTool.ReadXmlFile(filePath, fanNo);
+                var intePara = FileTool.ReadXmlFile(filePath, fanNo);
                 _setInteFanduty(intePara);
                 return true;
             }
@@ -193,39 +198,43 @@ namespace ECView.Services.ServicesImpl
         /// <param name="intePara"></param>
         private void _setInteFanduty(IntePara intePara)
         {
-            int[] ecData = GetTempFanDuty(intePara.FanNo);
-            if (intePara.ControlType == 1)
+            var ecData = GetTempFanDuty(intePara.FanNo);
+            switch (intePara.ControlType)
             {
-                _inteControl(intePara, ecData);
-            }
-            else if (intePara.ControlType == 2)
-            {
-                _inteControl(intePara, ecData);
+                case 1:
+                    _inteControl(intePara, ecData);
+                    break;
+                case 2:
+                    _inteControl(intePara, ecData);
+                    break;
             }
         }
+
         /// <summary>
         /// 智能控制方案
         /// </summary>
         /// <param name="intePara"></param>
         /// <param name="ecData"></param>
-        private void _inteControl(IntePara intePara, int[] ecData)
+        private void _inteControl(IntePara intePara, IList<int> ecData)
         {
-            int count = intePara.RangeParaList.Count;//风扇数量
-            int fanNo = intePara.FanNo;//风扇号
-            int minFanDuty = _checkFanDuty(intePara.MinFanDuty, 100, 2);//最小转速
-            for (int i = 0; i < count; i++)
+            if (intePara.RangeParaList == null) return;
+            var count = intePara.RangeParaList.Count;//风扇数量
+            var fanNo = intePara.FanNo;//风扇号
+            var minFanDuty = _checkFanDuty(intePara.MinFanDuty, 100, 2);//最小转速
+            for (var i = 0; i < count; i++)
             {
-                RangePara rp = intePara.RangeParaList[i];//当前遍历标签
-                int fanDuty = 0;//目标转速
-                if (intePara.ControlType == 1)//方案一
+                var rp = intePara.RangeParaList[i];//当前遍历标签
+                var fanDuty = 0;//目标转速
+                switch (intePara.ControlType)
                 {
-                    fanDuty = _checkFanDuty(rp.FanDuty, 100, 2);
+                    case 1:
+                        fanDuty = _checkFanDuty(rp.FanDuty, 100, 2);
+                        break;
+                    case 2:
+                        fanDuty = _checkFanDuty(rp.AddPercentage + ecData[0], 100, 2);
+                        break;
                 }
-                else if (intePara.ControlType == 2)//方案二
-                {
-                    fanDuty = _checkFanDuty(rp.AddPercentage + ecData[0], 100, 2);
-                }
-                int inferiorLimit = rp.InferiorLimit;//当前标签温度下限
+                var inferiorLimit = rp.InferiorLimit;//当前标签温度下限
                 if (i == 0)
                 {
                     //若小于最小温度，设置风扇转速为最小值
@@ -237,20 +246,12 @@ namespace ECView.Services.ServicesImpl
                     {
                         _compareFanDuty(fanNo, minFanDuty, fanDuty);
                     }
-                    else
-                    {
-                        continue;
-                    }
                 }
                 else if (i != count - 1)
                 {
                     if (_checkLogicalAnd(ecData[0], inferiorLimit, intePara.RangeParaList[i + 1].InferiorLimit))
                     {
                         _compareFanDuty(fanNo, minFanDuty, fanDuty);
-                    }
-                    else
-                    {
-                        continue;
                     }
                 }
                 else if (i == count - 1)
@@ -269,9 +270,9 @@ namespace ECView.Services.ServicesImpl
         /// <param name="second"></param>
         /// <param name="op"></param>
         /// <returns></returns>
-        private int _checkFanDuty(int first, int second, int op)
+        private static int _checkFanDuty(int first, int second, int op)
         {
-            int output = 0;
+            var output = 0;
             switch (op)
             {
                 case 1:
@@ -279,8 +280,6 @@ namespace ECView.Services.ServicesImpl
                     break;
                 case 2:
                     output = first > second ? second : first;
-                    break;
-                default:
                     break;
             }
             return output;
@@ -290,7 +289,7 @@ namespace ECView.Services.ServicesImpl
         /// </summary>
         /// <param name="fanDuty"></param>
         /// <returns></returns>
-        private int _parseFanDuty(int fanDuty)
+        private static int _parseFanDuty(int fanDuty)
         {
             return (int)(fanDuty * 2.55m);
         }
@@ -302,7 +301,7 @@ namespace ECView.Services.ServicesImpl
         /// <param name="fanDuty"></param>
         private void _compareFanDuty(int fanNo, int minFanDuty, int fanDuty)
         {
-            int duty = _checkFanDuty(minFanDuty, fanDuty, 1);
+            var duty = _checkFanDuty(minFanDuty, fanDuty, 1);
             SetFanduty(fanNo, _parseFanDuty(duty), false);
         }
         /// <summary>
@@ -312,7 +311,7 @@ namespace ECView.Services.ServicesImpl
         /// <param name="b"></param>
         /// <param name="c"></param>
         /// <returns></returns>
-        private bool _checkLogicalAnd(int a, int b, int c)
+        private static bool _checkLogicalAnd(int a, int b, int c)
         {
             return a >= b && a < c;
         }
@@ -321,7 +320,7 @@ namespace ECView.Services.ServicesImpl
         /// </summary>
         private int[] _updateFanDuty(int fanNo)
         {
-            int[] fanduty = GetTempFanDuty(fanNo);
+            var fanduty = GetTempFanDuty(fanNo);
             return fanduty;
         }
         #endregion

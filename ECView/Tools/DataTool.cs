@@ -11,7 +11,7 @@ namespace ECView.Tools
         public static extern int SetFANDutyAuto(int p1);
 
         [DllImport("ecview.dll", EntryPoint = "#5")]
-        public static extern ECData GetTempFanDuty(int p1);
+        public static extern EcData GetTempFanDuty(int p1);
 
         [DllImport("ecview.dll", EntryPoint = "#6")]
         public static extern int GetFANCounter();
@@ -19,11 +19,11 @@ namespace ECView.Tools
         [DllImport("ecview.dll", EntryPoint = "#8")]
         public static extern string GetECVersion();
 
-        public struct ECData
+        public struct EcData
         {
-            public int data;
-            public int data1;
-            public int data2;
+            public int Data;
+            public int Data1;
+            public int Data2;
         }
     }
 }
